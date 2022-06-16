@@ -25,10 +25,12 @@ playBtn.addEventListener('click',startGame);
 //CREO LA FUNZIONE 
 function startGame(){
    const mainGrid=document.querySelector('#main-grid');
+   const userMessageDiv=document.querySelector('#user-message');
 
    //SVUOTARE AD OGNI INIZIO
    mainGrid.innerHTML='';
    mainGrid.className='';
+   userMessageDiv.innerHTML='';
 
    //Numero delle bombe
    const bombNumb=16;
@@ -69,15 +71,15 @@ function startGame(){
  console.log(attempts);
   
  //Inserimento dei numeri
-  //Creo un array vuoto(che verra popolato con la seconda scelta numerica)
-  const arrayEmpt=[];
-  console.log(arrayEmpt);
+ //Creo un array vuoto(che verra popolato con la seconda scelta numerica)
+ const arrayEmpt=[];
+ console.log(arrayEmpt);
 
  generateGrid();
- //GENERARE LA GRIGLIA 
+ //POPOLA LA GRIGLIA 
  function generateGrid(){
 
-   //GENERO LA GRIGLIA IN FUNZIONE DELLA DIFFICOLTà SCELTA
+   //POPOLA LA GRIGLIA IN FUNZIONE DELLA DIFFICOLTà SCELTA
    //ASSOCIATA A UNA VARIABILE
    mainGrid.classList.add(mainGridClass);
 
@@ -92,45 +94,56 @@ function startGame(){
       mainGrid.append(newCell);
    }
   }
-
- 
    function clickCell(){
-      const userAttempts=parseInt(this.querySelector('span').innerHTML);
+
+      this.style.pointerEvents = 'none';  
+      //Lettura dello span e conversione in numero 
+      let userAttempts=parseInt(this.querySelector('span').innerHTML);
       console.log(userAttempts);
       
-         
-         if (generateBombArray.includes(userAttempts)){
-            
-            this.classList.add('square-red');
-            alert ('Peccato hai perso!');
-            alert ('Tentativi riusciti:'+ arrayEmpt.length);
-         }
-         else{
-            if(!generateBombArray.includes(userAttempts)){
-               arrayEmpt.push(userAttempts);
-               this.classList.add('square-blue');
-            }
-            if(arrayEmpt.length === attempts){
-       
-               alert ('Complimenti hai vinto!');
-            }
-         }
-         this.style.pointerEvents = 'none';
+      //imposto le condizioni per l'avanzamento nel gioco
+      //imposto le condizioni per la diversa colorazione
+      if (generateBombArray.includes(userAttempts)){
+         this.classList.add('square-red');
+         endGame('lost')
       }
-    
-      
+      else{
+         this.classList.add('square-blue');
+         if(!generateBombArray.includes(userAttempts)){
+            arrayEmpt.push(userAttempts);
+         }
+         if(arrayEmpt.length === attempts){
+            endGame ('won');
+         }
+      }
+   }
+
+   //Funzione di fine gioco
+   function endGame(gameResults){
+      if(gameResults==='won'){
+         userMessageDiv.innerHTML=`Hai vinto`;
+     } else {
+        userMessageDiv.innerHTML=`Hai perso, hai azzeccato ${arrayEmpt.length}`;
+     }
+     //Rendo le celle non ciliccabili di nuovo(Bonus)
+     const allCell=document.querySelectorAll('.square');
+     for(i=0; i < allCell.length;i++){
+        const thisSquare=allCell[i];
+        console.log(thisSquare);
+        //resa non cliccabile
+        thisSquare.style.pointerEvents = 'none';  
+        //tutte le bombe in evidenza
+        const thisSquareNumb=parseInt(thisSquare.querySelector('span').innerHTML);
+        if(generateBombArray.includes(thisSquareNumb)){
+         thisSquare.classList.add('square-red');
+        }
+     }
+   }
 }
-
-
-
-
-
 
 //--------------------------
 //Function
 //--------------------------
-
-
 
 //2-
 //Funzione per il popolamento dell'array(contenitore delle bombe)
